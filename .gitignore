@@ -1,3 +1,10 @@
-Будет удалено .gitignore
+### Будет удалено .gitignore
+### Example user template
+
+### IntelliJ project files
+.idea
+*.iml
+out
+gen
 env/
 token.json
