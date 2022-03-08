@@ -12,16 +12,16 @@ from httplib2 import Http
 from oauth2client import file, client, tools
 import time
 
-# If modifying these scopes, delete the file token.json.
+# Если модифицируете эти обзоры, удалите файл token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly',
           'https://www.googleapis.com/auth/gmail.modify']
 
 
-# ФУНКЦИЯ АУТИНТИФИКАЦИИ
+
 def get_service():
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
+    # Файл token.json хранит доступ пользователя и обновлять токены, и это
+    # создается автоматически при завершении потока авторизации для первого
+    # время.
     store = file.Storage('token.json')
     creds = store.get()
     if not creds or creds.invalid:
@@ -31,20 +31,19 @@ def get_service():
     return service
 
 
-# ПОЛУЧАЕМ СПИСОК СООБЩЕНИЙ
 def list_messages(service, user, query=''):
-    """Gets a list of messages.
+    """Получает список сообщений.
 
   Args:
-    service: Authorized Gmail API service instance.
-    user: The email address of the account.
-    query: String used to filter messages returned.
-           Eg.- 'label:UNREAD' for unread Messages only.
+    service: Уполномоченный экземпляр услуг API Gmail API.
+    user: Адрес электронной почты учетной записи.
+    query: Строка, используемая для фильтрации сообщений, возвращенных.
+           Например.- 'label:UNREAD' только для непрочитанных сообщений.
 
   Returns:
-    List of messages that match the criteria of the query. Note that the
-    returned list contains Message IDs, you must use get with the
-    appropriate id to get the details of a Message.
+    Список сообщений, соответствующих критериям запроса. Обратите внимание, что то
+    Возвращенный список содержит идентификаторы сообщений, вы должны использовать Get с
+    подходящий идентификатор, чтобы получить детали сообщения.
   """
     try:
         response = service.users().messages().list(userId=user, q=query).execute()
@@ -64,13 +63,13 @@ def list_messages(service, user, query=''):
 
 # ПОЛУЧАЕМ ДАННЫЕ КАЖДОГО СООБЩЕНИЯ
 def read_message(service, user_id, msg_id):
-    """Get a Message and use it to create a MIME Message.
+    """Получить сообщение и использовать его для создания сообщения MIME.
 
      Args:
-       service: Authorized Gmail API service instance.
-       user_id: User's email address. The special value "me"
-       can be used to indicate the authenticated user.
-       msg_id: The ID of the Message required.
+       service: Уполномоченный экземпляр службы API Gmail.
+       user_id: Адрес электронной почты пользователя. Специальное значение «я»
+       возможно используется для обозначения аутентифицированного пользователя.
+       msg_id: Идентификатор сообщения требуется.
 
      Returns:
        A MIME Message, consisting of data from Message.
@@ -85,8 +84,10 @@ def read_message(service, user_id, msg_id):
         print(f"An error occurred: {error}")
 
 
-# ФУНКЦИЯ ОТПРАВКИ СМС
+
 def sms_notification(msg_text):
+    """Получить смс опевещение об интересующих изменениях в почтовом ящике"""
+    
     account_sid = 'AC669d9811cff3e651b8525e353bba5078'
     auth_token = '1ce7bce90364b673bb7a1683e1bd0222'
 
@@ -107,6 +108,13 @@ if __name__ == '__main__':
     try:
         service = get_service()
         mess_list = list_messages(service, 'me', 'in:anywhere from:guard@arbitr.ru is:unread')
+        """По дефолту мы настроенны на оповещения из портала электронное правосудие, а точнее,
+        как только дело в котором вы принимаем участие, хоть как то изменилось,
+        мгновенно отправляется смс с кратким описанием изменений и ссылками для быстрого перехода
+        к ним - без необходимости тратить время на отслеживание и переходы по разделам.
+        Что в связи с априори сильной загруженностью среднестатистического юриста, 
+        ведушего минимум 15-20 дел одновременн - экономит для него, около 1 часа рабочего времени в день !
+        """
         for message in mess_list:
             msg = read_message(service, 'me', message['id'])
             message_box.append(msg)
