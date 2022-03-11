@@ -88,8 +88,8 @@ def read_message(service, user_id, msg_id):
 def sms_notification(msg_text):
     """Получить смс опевещение об интересующих изменениях в почтовом ящике"""
     
-    account_sid = 'AC669d9811cff3e651b8525e353bba5078'
-    auth_token = '1ce7bce90364b673bb7a1683e1bd0222'
+    account_sid = 'fix me !!!'
+    auth_token = 'fix me !!!'
 
     sms_client = Client(account_sid, auth_token)
 
